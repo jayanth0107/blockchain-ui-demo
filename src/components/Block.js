@@ -6,34 +6,40 @@ class Block extends Component {
 
     state = { displayTransaction: false, txData: [], blockData: [] };
 
+    /* To change state of Show More and Show Less buttons in a block */
     toggleTransaction = () => {
         this.setState({ displayTransaction: !this.state.displayTransaction }) 
     }    
 
+    /* To display transaction details in a block */
     displayTransaction = async (e, hash) => {
 
         this.toggleTransaction();
-        const response = await backendApi.get('/rawblock/'+hash, {
-            params: {cors: 'true'}
-        });
-        console.log(response, this.state.displayTransaction);
 
-        const blockData = response.data;
-        const transactionData = response.data.tx;
-        this.setState({txData: transactionData, blockData});
-        
+        // try catch block to handle network errors
+        try{
+            const response = await backendApi.get('/rawblock/'+hash, {
+                params: {cors: 'true'}
+            });
+            //console.log(response, this.state.displayTransaction);            
+            const blockData = response.data;
+            const transactionData = response.data.tx;
+            this.setState({txData: transactionData, blockData});
+        } catch (error) {
+            alert(error);
+        }
     }
 
-    get changeButton() {
+    /* Computed method to display all the data in a block */
+    get showData() {
 
         const { hash } = this.props.block;
-        
+
         if(this.state.txData.length && this.state.displayTransaction) {
             return (
                 <div>
                     Number of Transactions: {this.state.blockData.n_tx} <br />
                     Transaction Fees: {this.state.blockData.fee / 10**8} BTC <br />
-                    Height: {this.state.blockData.height} <br />
                     Bits: {this.state.blockData.bits} <br />
                     Size: {this.state.blockData.size / 10**3} kB <br />
                     {
@@ -70,6 +76,7 @@ class Block extends Component {
         const heightDisplay = height.length > 35 ? 
                      `${height.substring(0,35)}...` : height;
 
+        /* To format the timestamp displayed in the block */
         const appendLeadingZeroes = (n) => {
             if(n <= 9){
                 return "0" + n;
@@ -88,8 +95,9 @@ class Block extends Component {
             <div className='Block'>
                 <div> Block #{heightDisplay} </div>
                 <div> Hash: {hashDisplay} </div>
-                <div> TimeStamp: { formatted_date } </div>                
-                {this.changeButton}
+                <div> TimeStamp: { formatted_date } </div>
+                <div> Height: { height } </div>                 
+                {this.showData}
             </div>
         );                   
         
