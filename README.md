@@ -18,5 +18,5 @@ Launches the test runner in the interactive watch mode.<br>
 
 ### Component Architecture Diagram
 
-
+![Component LayOut](https://github.com/jayanth0107/blockchain-ui-demo/blob/master/src/design%20layouts/UI%20Component%20Layout.png)
 
